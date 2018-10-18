@@ -4,16 +4,16 @@
 * Se receber todos ACKS, consome o recurso (o envia para a thread de recursos)
 * Se não receber todos ACKS, aguarda a liberação do recurso (ou seja, alguém o está consumindo e enviará ACK dps de terminar)
 * Se dois processos pedirem o mesmo recurso, no mesmo tempo (relógio lógico igual), aquele com o menor PID utilizará o recurso primeiro
-** Ou seja, se p1 < p2, p1 receberá todos os acks e consumirá o recurso
-** p2 deve esperar, pois receberá n - 1 acks (receberá seu próprio ACK, mas não receberá o ACK de p1)
-** Quando p1 terminar de utilizar o recurso, enviará um ACK, então p2 pode consumir o recurso
+	* Ou seja, se p1 < p2, p1 receberá todos os acks e consumirá o recurso
+	* p2 deve esperar, pois receberá n - 1 acks (receberá seu próprio ACK, mas não receberá o ACK de p1)
+	* Quando p1 terminar de utilizar o recurso, enviará um ACK, então p2 pode consumir o recurso
 
-* Se, ainda nesse caso, um terceiro processo p3 pedir o recurso, ele será enfileirado tanto por p1 quanto por p2
-** o recurso então passará de p1 .. p2 .. p3
-*** p3 receberá n - 2 acks, daí receberá o ack de p1 e ficará com n - 1 acks
-*** quando p2 terminar de utilizar o recurso, enviará um ack para quem está na sua fila (isto é, p3)
-*** então p3 receberá n acks e poderá utilizar o recurso
-*** isso deve ser verdade para qualquer número N de solicitações de um mesmo recurso em uso
+	* Se, ainda nesse caso, um terceiro processo p3 pedir o recurso, ele será enfileirado tanto por p1 quanto por p2
+		* o recurso então passará de p1 .. p2 .. p3
+			* p3 receberá n - 2 acks, daí receberá o ack de p1 e ficará com n - 1 acks
+			* quando p2 terminar de utilizar o recurso, enviará um ack para quem está na sua fila (isto é, p3)
+			* então p3 receberá n acks e poderá utilizar o recurso
+			* isso deve ser verdade para qualquer número N de solicitações de um mesmo recurso em uso
 
 
 
