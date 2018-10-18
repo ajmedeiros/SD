@@ -21,11 +21,11 @@
 * Uma fila de recurso que está utilizando
 	* Se algum outro processo pedir um recurso que está utilizando, o coloca na fila e só após terminar de consumir o recurso, envia um ACK
 
-* Uma fila de acks para cada recurso solicitado
-	* Só irá consumir um recurso quando receber todos os N acks
+* Uma fila de acks para um recurso solicitado
+	* Só irá consumir o recurso quando receber todos os N acks
 
 * Se receber uma solicitação de recurso:
-	* Verifica se está utilizando o recurso, caso contrário, envia um ACK
+	* Verifica se está utilizando o recurso (ou se já fez uma solicitação antes e a enfilera), caso contrário, envia um ACK
 		* Se estiver utilizando o recurso, enfilera o PID do processo solicitante, ao terminar de utilizar o recurso, envia um ACK
 		* Se o próprio processo também enviou uma solicitação, compara os relógios+PIDs
 			* Se 'perder', envia um ACK
