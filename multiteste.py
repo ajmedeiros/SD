@@ -47,7 +47,7 @@ fila_aplicacao = []
 #Inicializa fila de processos que solicitaram o recurso (hashmap de lista)
 fila_proximos = defaultdict(list)
 
-#----------FUNCAO(THREAD) PARA TRATAR O RECEBIMENTO DE MSGS E SIMULAR ATRASO NA REDE-----------#
+#Recebe as mensagens e as trata (acks, naks e solicitacao de recurso)
 def recebe_msg(msg, transmissor, s):
 	global relogio, pid, fila_msg, fila_ack, ack_count
 
@@ -112,6 +112,7 @@ def recebe_msg(msg, transmissor, s):
 	return 0
 #--------------------------------------------------------------------------------------#
 
+#Envia os recursos na fila de solicitados para a fila de aplicacao
 def envia_para_aplicacao():
 	global fila_solicitado, fila_ack, pid, relogio
 
@@ -142,6 +143,7 @@ def envia_para_aplicacao():
 				print ('##########################################################################')
 	return 0
 
+#Consome os recursos da fila da aplicacao
 def consome_recurso():
 	global relogio
 	#Cria um socket
@@ -150,7 +152,9 @@ def consome_recurso():
 	s.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
 
 	while True:
-		time.sleep(.5)
+		#Tempo aleatorio para consumir o recurso
+		atraso = random.randint (200, 500)
+		time.sleep (atraso/100.0)
 
 		for k in fila_aplicacao:
 			time.sleep (3)
