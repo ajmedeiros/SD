@@ -49,15 +49,33 @@ portaNo = {
     'N': '10013',
 }
 
+#Dicionario dos vizinhos
+vizinhos = {
+    'A': ['B', 'E'],
+    'B': ['A', 'C', 'F', 'I'],
+    'C': ['B', 'F', 'D', 'G', 'J'],
+    'D': ['C', 'G', 'K'],
+    'E': ['A', 'H', 'I'],
+    'F': ['B', 'C', 'I', 'J', 'M'],
+    'G': ['C', 'D', 'J', 'K', 'N'],
+    'H': ['E', 'I', 'L'],
+    'I': ['B', 'E', 'F', 'H', 'L', 'M'],
+    'J': ['C', 'F', 'G', 'M', 'N'],
+    'K': ['D', 'G', 'N'],
+    'L': ['H', 'I'],
+    'M': ['F', 'I', 'J'],
+    'N': ['G', 'J', 'K'],
+}
+
 #Logica do algoritmo
 ack_count = 0
 pai = 0
+solEleicao = 'placeholder'
 
 #-- ARGUMENTOS DA MAIN --#
 porta = 0
 nid = 0
 peso = 0
-vizinhos = []
 
 #-- RECEPTOR UDP --#
 def receptor():
@@ -65,7 +83,7 @@ def receptor():
 
 	#------------- UNICAST --------------#
 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	s.bind((localhost, porta))
+	s.bind((localhost, int (porta)))
 	#------------- UNICAST --------------#
 
 	while True:
@@ -74,12 +92,12 @@ def receptor():
 
 		#Se houver alguma mensagem
 		if msg:
-			#CODIGO
-			print 'a'
+			print str (transmissor) + '\n' + str (msg)
 	return 0
 
 #-- TRANSMISSOR UDP --#
 def transmissor ():
+	global solEleicao
 	#Cria um socket
 	s = socket.socket(socket.TIPC_ADDR_NAME, socket.SOCK_DGRAM)
 	#Seta TTL
@@ -87,13 +105,14 @@ def transmissor ():
 
 	while True:
 		#Identificador do recurso solicitado
-		mensagem = raw_input()
+		solEleicao = raw_input (txt.HEADER + txt.BOLD + "Iniciar eleicao com ID: " + txt.ENDC)
 
-		if (mensagem == 'exit'):
+		if (solEleicao == 'exit'):
 			break
 
-		for no in vizinhos:
-			s.sendto('MENSAGEM', (localhost, portaNo (no)))
+		#Broadcast simulado
+		for no in vizinhos[nid]:
+			s.sendto('ELEICAO|' + solEleicao + '|' + nid, (localhost, int (portaNo [no])))
 	return 0
 
 
@@ -104,10 +123,14 @@ if __name__ == '__main__':
 
 	nid = sys.argv[1]
 	peso = sys.argv[2]
+	porta = portaNo[nid]
 
-	print txt.HEADER + txt.BOLD + "Vizinhos (separados por espaco): " + txt.ENDC
+	#Thread para o transmissor funcionar concorrentemente ao receptor
+	thread.start_new_thread (transmissor, ())
+	thread.start_new_thread (receptor, ())
 
-	#Entrar com vizinhos, separados por espaço
-	vizinhos = raw_input().split (' ')
-
+	while (True):
+		time.sleep(.5)
+		if (solEleicao == 'exit'):
+			sys.exit(0)
 	sys.exit(0)
