@@ -51,12 +51,14 @@ portaNo = {
 
 #Dicionario dos vizinhos (mesma topologia da imagem)
 vizinhos = {
-#	'A': ['B', 'C', 'E'],
-#	'B': ['A', 'D'],
-#	'C': ['A', 'D', 'E'],
-#	'D': ['B', 'C'],
-#	'E': ['A', 'C'],
+	'A': ['B', 'C', 'E'],
+	'B': ['A', 'D'],
+	'C': ['A', 'D', 'E'],
+	'D': ['B', 'C'],
+	'E': ['A', 'C'],	
+}
 
+vizinhos_off = {
 	'A': ['B', 'E'],
 	'B': ['A', 'C', 'F', 'I'],
 	'C': ['B', 'F', 'D', 'G', 'J'],
@@ -100,14 +102,18 @@ def contador ():
 
 	while True:
 		time.sleep (.3)
+
 		#Verifica se já recebeu todos os ACKS e responde ao nó pai
 		#Se for source, então ack count = número de vizinhos
 		if pai == nid:
 			if nid in vizinhos and ack_count >= len (vizinhos[nid]):
 				print txt.OKGREEN + txt.BOLD + 'Novo líder eleito: ' + maiorNo + txt.ENDC
+				print txt.OKGREEN + txt.BOLD + 'Eleição: ' + eleicao + txt.ENDC
+				print txt.OKGREEN + txt.BOLD + 'Capacidade: ' + maiorNoPeso + txt.ENDC
+
 				novoLider = 1
 				for no in vizinhos[nid]:
-					sock_transmissor.sendto('NOVOLIDER|' + maiorNo + '|' + nid, (localhost, int (portaNo [no])))
+					sock_transmissor.sendto('NOVOLIDER|' + eleicao + '_' + maiorNo + '_' + maiorNoPeso + '|' + nid, (localhost, int (portaNo [no])))
 				#Reseta a eleição
 				pai = 0
 				eleicao = 0
@@ -216,17 +222,20 @@ def receptor():
 
 			elif 'NOVOLIDER' in msg_type:
 				if novoLider == 0:
-					novoLider = 1
-					print txt.OKGREEN + txt.BOLD + 'Novo líder eleito: ' + msg_data + txt.ENDC
+					msg_eleicao, msg_maiorNo, msg_maiorNoPeso = msg_data.split ('_')
+					print txt.OKGREEN + txt.BOLD + 'Novo líder eleito: ' + msg_maiorNo + txt.ENDC
+					print txt.OKGREEN + txt.BOLD + 'Eleição: ' + msg_eleicao + txt.ENDC
+					print txt.OKGREEN + txt.BOLD + 'Capacidade: ' + msg_maiorNoPeso + txt.ENDC
 					for no in vizinhos[nid]:
 						sock_transmissor.sendto('NOVOLIDER|' + msg_data + '|' + nid, (localhost, int (portaNo[no])))
+				novoLider = 1
 			else:
 				print txt.FAIL + txt.BOLD + 'Erro: mensagem não reconhecida.' + txt.ENDC
 	return 0
 
 #-- TRANSMISSOR UDP --#
 def transmissor ():
-	global solicitarEleicao, eleicao, nid, pai, peso, maiorNoPeso
+	global solicitarEleicao, eleicao, nid, pai, peso, maiorNoPeso, novoLider
 	#Cria um socket
 	s = socket.socket(socket.TIPC_ADDR_NAME, socket.SOCK_DGRAM)
 	#Seta TTL
@@ -239,8 +248,9 @@ def transmissor ():
 		if (solicitarEleicao == 'exit'):
 			break
 
-		if eleicao == 0 and novoLider == 0:
+		if eleicao == 0:
 			if 'eleicao' in solicitarEleicao:	
+				novoLider = 0
 				aux, eleicao = solicitarEleicao.split(' ')
 				pai = nid
 				#Broadcast simulado
