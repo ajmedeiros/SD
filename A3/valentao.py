@@ -49,8 +49,8 @@ portaNo = {
     'N': '10013',
 }
 
-#Dicionario dos vizinhos (mesma topologia da imagem)
-vizinhos = {
+#Topologia de testes (vizinhos = em uso)
+vizinhos_off = {
 	'A': ['B', 'C', 'E'],
 	'B': ['A', 'D'],
 	'C': ['A', 'D', 'E'],
@@ -58,7 +58,8 @@ vizinhos = {
 	'E': ['A', 'C'],	
 }
 
-vizinhos_off = {
+#Dicionario dos vizinhos (mesma topologia da imagem)
+vizinhos = {
 	'A': ['B', 'E'],
 	'B': ['A', 'C', 'F', 'I'],
 	'C': ['B', 'F', 'D', 'G', 'J'],
@@ -221,8 +222,11 @@ def receptor():
 					print txt.WARNING + 'ACK de eleição ' + msg_data + ' do nó ' + msg_nid + ' descartado'
 
 			elif 'NOVOLIDER' in msg_type:
+				print txt.HEADER + msg + txt.ENDC
+				msg_eleicao, msg_maiorNo, msg_maiorNoPeso = msg_data.split ('_')
+				if eleicao != 0 and msg_eleicao != eleicao:
+					continue
 				if novoLider == 0:
-					msg_eleicao, msg_maiorNo, msg_maiorNoPeso = msg_data.split ('_')
 					print txt.OKGREEN + txt.BOLD + 'Novo líder eleito: ' + msg_maiorNo + txt.ENDC
 					print txt.OKGREEN + txt.BOLD + 'Eleição: ' + msg_eleicao + txt.ENDC
 					print txt.OKGREEN + txt.BOLD + 'Capacidade: ' + msg_maiorNoPeso + txt.ENDC
