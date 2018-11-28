@@ -239,7 +239,7 @@ def transmissor ():
 		if (solicitarEleicao == 'exit'):
 			break
 
-		if eleicao == 0 && novoLider == 0:
+		if eleicao == 0 and novoLider == 0:
 			if 'eleicao' in solicitarEleicao:	
 				aux, eleicao = solicitarEleicao.split(' ')
 				pai = nid
