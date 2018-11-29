@@ -50,7 +50,11 @@ portaNo = {
 }
 
 #Topologia de testes (vizinhos = em uso)
+<<<<<<< HEAD
 vizinhos = {
+=======
+vizinhos_teste = {
+>>>>>>> b8572b97918164ab59af82fca1602186963cfe1c
 	'A': ['B', 'C', 'E'],
 	'B': ['A', 'D'],
 	'C': ['A', 'D', 'E'],
@@ -58,7 +62,11 @@ vizinhos = {
 	'E': ['A', 'C'],	
 }
 
+<<<<<<< HEAD
 #Dicionario dos vizinhos (mesma topologia da imagem)
+=======
+#Dicionario dos vizinhos (mesma topologia da imagem topo2.png)
+>>>>>>> b8572b97918164ab59af82fca1602186963cfe1c
 vizinhos_off = {
 	'A': ['B', 'E'],
 	'B': ['A', 'C', 'F', 'I'],
@@ -74,6 +82,21 @@ vizinhos_off = {
 	'L': ['H', 'I'],
 	'M': ['F', 'I', 'J'],
 	'N': ['G', 'J', 'K'],
+}
+
+vizinhos = {
+	'A': ['D'],
+	'B': ['D', 'E', 'G'],
+	'C': ['E', 'I'],
+	'D': ['A', 'B', 'F', 'H'],
+	'E': ['B', 'C', 'G', 'L'],
+	'F': ['D'],
+	'G': ['B', 'E', 'H'],
+	'H': ['D', 'J', 'K'],
+	'I': ['C', 'L'],
+	'J': ['H'],
+	'K': ['H'],
+	'L': ['E', 'I'],
 }
 
 
