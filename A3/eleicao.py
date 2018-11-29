@@ -109,6 +109,10 @@ porta = 0
 nid = 0
 peso = 0
 
+#extras para impressao
+msg_tracos = '\n*-------------------------*\n'
+msg_recebida = 'Recebido: '
+
 #-- VERIFICA ACKS --#
 def contador ():
 	global pai, eleicao, ack_count, maiorNo, maiorNoPeso, novoLider
@@ -124,9 +128,9 @@ def contador ():
 		#Se for source, então ack count = número de vizinhos
 		if pai == nid:
 			if nid in vizinhos and ack_count >= len (vizinhos[nid]):
-				print txt.OKGREEN + txt.BOLD + 'Novo líder eleito: ' + maiorNo + txt.ENDC
+				print txt.OKGREEN + txt.BOLD + msg_tracos + 'Novo líder eleito: ' + maiorNo + txt.ENDC
 				print txt.OKGREEN + txt.BOLD + 'Eleição: ' + eleicao + txt.ENDC
-				print txt.OKGREEN + txt.BOLD + 'Capacidade: ' + maiorNoPeso + txt.ENDC
+				print txt.OKGREEN + txt.BOLD + 'Capacidade: ' + maiorNoPeso + msg_tracos + txt.ENDC
 
 				novoLider = 1
 				for no in vizinhos[nid]:
@@ -173,7 +177,7 @@ def receptor():
 			msg_type, msg_data, msg_nid = msg.split ('|')
 
 			if 'ELEICAO' in msg_type:
-				print txt.OKBLUE + msg + txt.ENDC
+				print txt.OKBLUE + msg_recebida + msg + txt.ENDC
 				#Não há nenhuma eleição ativa
 				if eleicao == 0:
 					novoLider = 0
@@ -190,7 +194,7 @@ def receptor():
 				else:
 					#Compara os IDs das eleições e descarta o menor
 					if int (msg_data) > int (eleicao):
-						print txt.WARNING + 'Eleição atual ' + eleicao + ' descartada'
+						print txt.WARNING + msg_recebida + 'Eleição atual ' + eleicao + ' descartada'
 						#Descarta a eleição anterior
 						pai = msg_nid
 						eleicao = msg_data
@@ -214,7 +218,7 @@ def receptor():
 						print txt.WARNING + 'Solicitação de eleição ' + msg_data + ' do nó ' + msg_nid + ' descartada'
 
 			elif 'RESPOSTA' in msg_type:
-				print txt.OKGREEN + msg + txt.ENDC
+				print txt.OKGREEN + msg_recebida + msg + txt.ENDC
 				msg_eleicao, msg_maiorNo, msg_maiorPeso = msg_data.split ('_')
 
 				#Verifica se a resposta é da atual eleição, se não descarta (eleição já está 'obsoleta') 
@@ -230,7 +234,7 @@ def receptor():
 					print txt.WARNING + 'Resposta de eleição ' + msg_data + ' do nó ' + msg_nid + ' descartada'
 
 			elif 'ACK' in msg_type:
-				print txt.HEADER + msg + txt.ENDC
+				print txt.HEADER + msg_recebida + msg + txt.ENDC
 				#Verifica se o ack é da atual eleição, se não descarta
 				if msg_data == eleicao:
 					ack_count += 1
@@ -238,14 +242,14 @@ def receptor():
 					print txt.WARNING + 'ACK de eleição ' + msg_data + ' do nó ' + msg_nid + ' descartado'
 
 			elif 'NOVOLIDER' in msg_type:
-				print txt.HEADER + msg + txt.ENDC
+				print txt.HEADER + msg_recebida + msg + txt.ENDC
 				msg_eleicao, msg_maiorNo, msg_maiorNoPeso = msg_data.split ('_')
 				if eleicao != 0 and msg_eleicao != eleicao:
 					continue
 				if novoLider == 0:
-					print txt.OKGREEN + txt.BOLD + 'Novo líder eleito: ' + msg_maiorNo + txt.ENDC
+					print txt.OKGREEN + txt.BOLD + msg_tracos + 'Novo líder eleito: ' + msg_maiorNo + txt.ENDC
 					print txt.OKGREEN + txt.BOLD + 'Eleição: ' + msg_eleicao + txt.ENDC
-					print txt.OKGREEN + txt.BOLD + 'Capacidade: ' + msg_maiorNoPeso + txt.ENDC
+					print txt.OKGREEN + txt.BOLD + 'Capacidade: ' + msg_maiorNoPeso + msg_tracos + txt.ENDC
 					for no in vizinhos[nid]:
 						sock_transmissor.sendto('NOVOLIDER|' + msg_data + '|' + nid, (localhost, int (portaNo[no])))
 				novoLider = 1
@@ -278,8 +282,10 @@ def transmissor ():
 					s.sendto('ELEICAO|' + eleicao + '|' + nid, (localhost, int (portaNo [no])))
 
 			if 'peso' in solicitarEleicao:
+				peso_ant = peso
 				aux, peso = solicitarEleicao.split (' ')
 				maiorNoPeso = peso
+				print txt.OKBLUE + txt.BOLD + 'Peso desse nó atualizado de ' + peso_ant + ' para ' + peso + '.' + txt.ENDC
 		else:
 			print txt.WARNING + 'Existe uma eleição em andamento' + txt.ENDC
 
