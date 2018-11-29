@@ -194,7 +194,8 @@ def receptor():
 				else:
 					#Compara os IDs das eleições e descarta o menor
 					if int (msg_data) > int (eleicao):
-						print txt.WARNING + msg_recebida + 'Eleição atual ' + eleicao + ' descartada'
+						print txt.WARNING + msg_recebida + 'Eleição atual ' + eleicao + ' descartada.'
+						print txt.WARNING + 'Eleição atual é a de ID ' + msg_data + '.'
 						#Descarta a eleição anterior
 						pai = msg_nid
 						eleicao = msg_data
@@ -215,7 +216,8 @@ def receptor():
 
 					#Se o ID for menor, então descarta e não faz nada
 					else:
-						print txt.WARNING + 'Solicitação de eleição ' + msg_data + ' do nó ' + msg_nid + ' descartada'
+						print txt.WARNING + 'Solicitação de eleição ' + msg_data + ' do nó ' + msg_nid + ' descartada.'
+						print txt.WARNING + 'Eleição de ID ' + eleicao + ' em andamento.' 
 
 			elif 'RESPOSTA' in msg_type:
 				print txt.OKGREEN + msg_recebida + msg + txt.ENDC
@@ -231,7 +233,8 @@ def receptor():
 						maiorNoPeso = msg_maiorPeso
 
 				else:
-					print txt.WARNING + 'Resposta de eleição ' + msg_data + ' do nó ' + msg_nid + ' descartada'
+					print txt.WARNING + 'Resposta de eleição ' + msg_data + ' do nó ' + msg_nid + ' descartada.'
+					print txt.WARNING + 'Eleição de ID ' + eleicao + ' em andamento.' 
 
 			elif 'ACK' in msg_type:
 				print txt.HEADER + msg_recebida + msg + txt.ENDC
@@ -239,7 +242,8 @@ def receptor():
 				if msg_data == eleicao:
 					ack_count += 1
 				else:
-					print txt.WARNING + 'ACK de eleição ' + msg_data + ' do nó ' + msg_nid + ' descartado'
+					print txt.WARNING + 'ACK de eleição ' + msg_data + ' do nó ' + msg_nid + ' descartado.'
+					print txt.WARNING + 'Eleição de ID ' + eleicao + ' em andamento.' 
 
 			elif 'NOVOLIDER' in msg_type:
 				print txt.HEADER + msg_recebida + msg + txt.ENDC
